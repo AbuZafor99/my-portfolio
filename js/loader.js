@@ -6,8 +6,7 @@ async function loadComponents() {
         { id: 'about-placeholder', file: 'html/about.html' },
         { id: 'experience-placeholder', file: 'html/experience.html' },
         { id: 'work-placeholder', file: 'html/work.html' },
-        { id: 'contact-placeholder', file: 'html/contact.html' },
-        { id: 'splash-placeholder', file: 'html/splash.html' } // Add splash screen
+        { id: 'contact-placeholder', file: 'html/contact.html' }
     ];
 
     // Load splash screen first if possible, or just load all
