@@ -212,7 +212,9 @@ async function handleProjectSubmit(e) {
 
         const response = await fetch(url, {
             method: method,
-            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            },
             body: formData
         });
 
@@ -235,7 +237,9 @@ async function deleteProject(id) {
     try {
         const response = await fetch(`${API_URL}/projects/${id}`, {
             method: 'DELETE',
-            credentials: 'include'
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
         });
 
         if (response.ok) {
@@ -419,7 +423,9 @@ async function handleExperienceSubmit(e) {
 
         const response = await fetch(url, {
             method: method,
-            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            },
             body: formData
         });
 
@@ -442,7 +448,9 @@ async function deleteExperience(id) {
     try {
         const response = await fetch(`${API_URL}/experience/${id}`, {
             method: 'DELETE',
-            credentials: 'include'
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
         });
 
         if (response.ok) {
@@ -573,7 +581,9 @@ async function handleAboutSubmit(e) {
     try {
         const response = await fetch(`${API_URL}/about`, {
             method: 'PUT',
-            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            },
             body: formData
         });
 
@@ -647,7 +657,9 @@ async function handleCVUpload(e) {
     try {
         const response = await fetch(`${API_URL}/cv`, {
             method: 'POST',
-            credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            },
             body: formData
         });
 
