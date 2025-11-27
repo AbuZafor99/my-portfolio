@@ -30,7 +30,8 @@ app.use(cors({
         }
         return callback(null, true);
     },
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
