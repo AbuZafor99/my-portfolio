@@ -39,14 +39,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
+const isProduction = process.env.NODE_ENV === 'production';
+
+app.set('trust proxy', 1); // Trust first proxy (required for Render/Heroku)
+
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Always false for http (localhost)
+        secure: isProduction, // True in production (https), false in dev
         httpOnly: true,
-        sameSite: 'lax', // Needed for cross-site delivery
+        sameSite: isProduction ? 'none' : 'lax', // None for cross-site in prod
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
