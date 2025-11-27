@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Portfolio CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 5L95 25V75L50 95L5 75V25L50 5Z" stroke="#64ffda" stroke-width="4" />
+                    <text x="50" y="65" text-anchor="middle" fill="#64ffda" font-size="40" font-weight="bold">Z</text>
+                </svg>
+                <span>Portfolio CMS</span>
+            </div>
+            <div class="header-actions">
+                <a href="../index.html" target="_blank" class="btn-view-site">
+                    <i class="fas fa-external-link-alt"></i> View Site
+                </a>
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="projects">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Projects</span>
+                </button>
+                <button class="nav-tab" data-tab="experience">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Experience</span>
+                </button>
+                <button class="nav-tab" data-tab="about">
+                    <i class="fas fa-user"></i>
+                    <span>About</span>
+                </button>
+                <button class="nav-tab" data-tab="cv">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>CV</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Projects Tab -->
+            <div id="projects" class="tab-content active">
+                <div class="section-header">
+                    <h2><i class="fas fa-folder-open"></i> Manage Projects</h2>
+                    <button class="btn-primary" onclick="showAddProjectModal()">
+                        <i class="fas fa-plus"></i> Add Project
+                    </button>
+                </div>
+                <div id="projectsList" class="items-grid"></div>
+            </div>
+
+            <!-- Experience Tab -->
+            <div id="experience" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-briefcase"></i> Manage Experience</h2>
+                    <button class="btn-primary" onclick="showAddExperienceModal()">
+                        <i class="fas fa-plus"></i> Add Experience
+                    </button>
+                </div>
+                <div id="experienceList" class="items-grid"></div>
+            </div>
+
+            <!-- About Tab -->
+            <div id="about" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-user"></i> About Section</h2>
+                </div>
+                <div id="aboutForm" class="form-container"></div>
+            </div>
+
+            <!-- CV Tab -->
+            <div id="cv" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-file-pdf"></i> CV Management</h2>
+                </div>
+                <div id="cvSection" class="form-container"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="projectModalTitle">Add Project</h3>
+                <button class="close-modal" onclick="closeProjectModal()">&times;</button>
+            </div>
+            <form id="projectForm" class="modal-form">
+                <input type="hidden" id="projectId">
+
+                <div class="form-group">
+                    <label for="projectTitle">Project Title *</label>
+                    <input type="text" id="projectTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectOverline">Overline</label>
+                    <input type="text" id="projectOverline" value="Featured Project">
+                </div>
+
+                <div class="form-group">
+                    <label for="projectDescription">Description *</label>
+                    <textarea id="projectDescription" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectTechnologies">Technologies (comma-separated) *</label>
+                    <input type="text" id="projectTechnologies" placeholder="Flutter, Firebase, Dart" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectGithub">GitHub URL</label>
+                        <input type="url" id="projectGithub" placeholder="https://github.com/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="projectLive">Live URL</label>
+                        <input type="url" id="projectLive" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectImage">Project Image</label>
+                    <input type="file" id="projectImage" accept="image/*">
+                    <div id="projectImagePreview" class="image-preview"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeProjectModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Experience Modal -->
+    <div id="experienceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="experienceModalTitle">Add Experience</h3>
+                <button class="close-modal" onclick="closeExperienceModal()">&times;</button>
+            </div>
+            <form id="experienceForm" class="modal-form">
+                <input type="hidden" id="experienceId">
+
+                <div class="form-group">
+                    <label for="experienceCompany">Company *</label>
+                    <input type="text" id="experienceCompany" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="experiencePosition">Position *</label>
+                    <input type="text" id="experiencePosition" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="experiencePeriod">Period *</label>
+                    <input type="text" id="experiencePeriod" placeholder="January 2020 - Present" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="experienceTabName">Tab Name *</label>
+                    <input type="text" id="experienceTabName" placeholder="Short name for tab" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description Points *</label>
+                    <div id="descriptionPoints">
+                        <div class="description-point">
+                            <input type="text" class="desc-input" placeholder="Description point 1">
+                            <button type="button" class="btn-remove" onclick="removeDescPoint(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add-point" onclick="addDescPoint()">
+                        <i class="fas fa-plus"></i> Add Point
+                    </button>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeExperienceModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Experience</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

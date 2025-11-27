@@ -7,5 +7,35 @@
         question or just want to say hi, I'll try my best to get
         back to you!
     </p>
-    <a href="mailto:abuzafor.dev@gmail.com" class="btn">Say Hello</a>
+    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <a href="mailto:abuzafor.dev@gmail.com" class="btn">Say Hello</a>
+        <a href="#" id="cvDownloadBtn" class="btn"
+            style="background: rgba(100, 255, 218, 0.1); border: 1px solid #64ffda;">
+            <i class="fas fa-download"></i> Download CV
+        </a>
+    </div>
 </section>
+
+<script src="js/api.js"></script>
+<script>
+    // Load CV link dynamically
+    async function loadCVLink() {
+        const cvBtn = document.getElementById('cvDownloadBtn');
+
+        try {
+            const cv = await PortfolioAPI.getCV();
+            if (cv && cv.path) {
+                cvBtn.href = cv.path;
+            }
+        } catch (error) {
+            console.error('Failed to load CV link:', error);
+        }
+    }
+
+    // Load CV link when the page loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadCVLink);
+    } else {
+        loadCVLink();
+    }
+</script>

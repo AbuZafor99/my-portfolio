@@ -1,128 +1,72 @@
 <!-- Work Section -->
 <section id="work" class="work">
     <h2 class="numbered-heading">Some Things I've Built</h2>
-    <ul class="project-list">
-        <!-- Project 1: GitHub Explorer -->
-        <li class="project-item slide-left">
-            <div class="project-content">
-                <p class="project-overline">Featured Project</p>
-                <h3 class="project-title">GitHub Explorer</h3>
-                <div class="project-description">
-                    <p>
-                        Discover amazing repositories and explore
-                        the world of open source development. Browse
-                        profiles, view repositories, and explore
-                        details with a clean, modern interface.
-                    </p>
-                </div>
-                <ul class="project-tech-list">
-                    <li>Flutter</li>
-                    <li>REST API</li>
-                    <li>Provider</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://github.com/AbuZafor99/github_explorer" target="_blank"><i
-                            class="fab fa-github"></i></a>
-                    <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-            <div class="project-image">
-                <a href="https://github.com/AbuZafor99/github_explorer" target="_blank">
-                    <img src="assets/github_explorer.png" alt="GitHub Explorer App" />
-                </a>
-            </div>
-        </li>
-
-        <!-- Project 2: Online Car Wash App -->
-        <li class="project-item slide-right">
-            <div class="project-content">
-                <p class="project-overline">Featured Project</p>
-                <h3 class="project-title">Online Car Wash App</h3>
-                <div class="project-description">
-                    <p>
-                        A convenient mobile application for booking
-                        car wash services online. Features include
-                        service selection, appointment scheduling,
-                        and user profile management.
-                    </p>
-                </div>
-                <ul class="project-tech-list">
-                    <li>Flutter</li>
-                    <li>Firebase</li>
-                    <li>Dart</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://github.com/AbuZafor99/Online-Car-Wash-App-" target="_blank"><i
-                            class="fab fa-github"></i></a>
-                    <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-            <div class="project-image">
-                <a href="https://github.com/AbuZafor99/Online-Car-Wash-App-" target="_blank">
-                    <img src="assets/car_wash.png" alt="Online Car Wash App" />
-                </a>
-            </div>
-        </li>
-
-        <!-- Project 3: Task Manager Using GetX -->
-        <li class="project-item slide-left">
-            <div class="project-content">
-                <p class="project-overline">Featured Project</p>
-                <h3 class="project-title">Task Manager (GetX)</h3>
-                <div class="project-description">
-                    <p>
-                        An efficient task management application
-                        built with GetX for robust state management.
-                        Organize your daily tasks with ease and
-                        improve productivity.
-                    </p>
-                </div>
-                <ul class="project-tech-list">
-                    <li>Flutter</li>
-                    <li>GetX</li>
-                    <li>SQLite</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://github.com/AbuZafor99/Task-Manager-Using-GetX" target="_blank"><i
-                            class="fab fa-github"></i></a>
-                    <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-            <div class="project-image">
-                <a href="https://github.com/AbuZafor99/Task-Manager-Using-GetX" target="_blank">
-                    <img src="assets/task_manager.png" alt="Task Manager App" />
-                </a>
-            </div>
-        </li>
-
-        <!-- Project 4: News App -->
-        <li class="project-item slide-right">
-            <div class="project-content">
-                <p class="project-overline">Featured Project</p>
-                <h3 class="project-title">News App</h3>
-                <div class="project-description">
-                    <p>
-                        Stay updated with the latest headlines from
-                        around the world. Fetches live news data
-                        using a REST API and displays it in a
-                        user-friendly layout.
-                    </p>
-                </div>
-                <ul class="project-tech-list">
-                    <li>Flutter</li>
-                    <li>REST API</li>
-                    <li>NewsAPI</li>
-                </ul>
-                <div class="project-links">
-                    <a href="https://github.com/AbuZafor99/News-App" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="#" target="_blank"><i class="fas fa-external-link-alt"></i></a>
-                </div>
-            </div>
-            <div class="project-image">
-                <a href="https://github.com/AbuZafor99/News-App" target="_blank">
-                    <img src="assets/news_app.png" alt="News App" />
-                </a>
-            </div>
-        </li>
+    <ul class="project-list" id="projectList">
+        <!-- Projects will be loaded dynamically -->
+        <div class="loading-skeleton">
+            <p style="color: #8892b0; text-align: center;">Loading projects...</p>
+        </div>
     </ul>
 </section>
+
+<script src="js/api.js"></script>
+<script>
+// Load projects dynamically
+async function loadProjects() {
+    const projectList = document.getElementById('projectList');
+    
+    try {
+        const projects = await PortfolioAPI.getProjects();
+        
+        if (projects.length === 0) {
+            projectList.innerHTML = '<p style="color: #8892b0; text-align: center;">No projects available.</p>';
+            return;
+        }
+        
+        projectList.innerHTML = '';
+        
+        projects.forEach((project, index) => {
+            const li = document.createElement('li');
+            li.className = `project-item ${index % 2 === 0 ? 'slide-left' : 'slide-right'}`;
+            
+            const imageUrl = PortfolioAPI.getImageURL(project.image);
+            
+            li.innerHTML = `
+                <div class="project-content">
+                    <p class="project-overline">${project.overline}</p>
+                    <h3 class="project-title">${project.title}</h3>
+                    <div class="project-description">
+                        <p>${project.description}</p>
+                    </div>
+                    <ul class="project-tech-list">
+                        ${project.technologies.map(tech => `<li>${tech}</li>`).join('')}
+                    </ul>
+                    <div class="project-links">
+                        ${project.githubUrl && project.githubUrl !== '#' ? 
+                            `<a href="${project.githubUrl}" target="_blank"><i class="fab fa-github"></i></a>` : ''}
+                        ${project.liveUrl && project.liveUrl !== '#' ? 
+                            `<a href="${project.liveUrl}" target="_blank"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                    </div>
+                </div>
+                <div class="project-image">
+                    <a href="${project.githubUrl || '#'}" target="_blank">
+                        <img src="${imageUrl}" alt="${project.title}" />
+                    </a>
+                </div>
+            `;
+            
+            projectList.appendChild(li);
+        });
+    } catch (error) {
+        console.error('Failed to load projects:', error);
+        projectList.innerHTML = '<p style="color: #f87171; text-align: center;">Failed to load projects. Please try again later.</p>';
+    }
+}
+
+// Load projects when the page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadProjects);
+} else {
+    loadProjects();
+}
+</script>
