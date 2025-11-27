@@ -24,7 +24,7 @@ async function checkAuth() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/auth/status`, {
+        const response = await fetch(`${API_URL}/auth/status?_=${Date.now()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

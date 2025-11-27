@@ -60,7 +60,8 @@ class PortfolioAPI {
         if (!imagePath) return '';
         if (imagePath.startsWith('http')) return imagePath;
         if (imagePath.startsWith('uploads/')) {
-            return `http://localhost:3000/${imagePath}`;
+            const baseUrl = API_BASE_URL.replace('/api', '');
+            return `${baseUrl}/${imagePath}`;
         }
         return imagePath;
     }
