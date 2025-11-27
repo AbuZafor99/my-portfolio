@@ -654,14 +654,19 @@ async function handleCVUpload(e) {
     const formData = new FormData();
     formData.append('cv', file);
 
+    const token = getToken();
+    console.log('Uploading CV with token:', token);
+
     try {
         const response = await fetch(`${API_URL}/cv`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${getToken()}`
+                'Authorization': `Bearer ${token}`
             },
             body: formData
         });
+
+        console.log('CV Upload Response Status:', response.status);
 
         if (response.ok) {
             showToast('CV uploaded successfully!', 'success');

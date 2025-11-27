@@ -302,11 +302,13 @@
 
                 const data = await response.json();
 
-                if (response.ok) {
+                if (response.ok && data.token) {
                     // Success - save token and redirect
+                    console.log('Login successful, saving token:', data.token);
                     localStorage.setItem('adminToken', data.token);
                     window.location.href = 'index.html';
                 } else {
+                    console.error('Login failed or no token:', data);
                     // Show error
                     errorMessage.textContent = data.error || 'Invalid credentials';
                     errorMessage.classList.add('show');
