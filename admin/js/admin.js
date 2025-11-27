@@ -10,19 +10,32 @@ window.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
 });
 
+// Get token from local storage
+function getToken() {
+    return localStorage.getItem('adminToken');
+}
+
 // Check if user is authenticated
 async function checkAuth() {
+    const token = getToken();
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+
     try {
         const response = await fetch(`${API_URL}/auth/status`, {
-            credentials: 'include'
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
-        const data = await response.json();
 
-        if (!data.isAuthenticated) {
-            window.location.href = 'login.html';
+        if (!response.ok) {
+            throw new Error('Unauthorized');
         }
     } catch (error) {
         console.error('Auth check failed:', error);
+        localStorage.removeItem('adminToken');
         window.location.href = 'login.html';
     }
 }
@@ -64,16 +77,9 @@ function switchTab(tabName) {
 }
 
 // Logout
-async function logout() {
-    try {
-        await fetch(`${API_URL}/auth/logout`, {
-            method: 'POST',
-            credentials: 'include'
-        });
-        window.location.href = 'login.html';
-    } catch (error) {
-        showToast('Logout failed', 'error');
-    }
+function logout() {
+    localStorage.removeItem('adminToken');
+    window.location.href = 'login.html';
 }
 
 // Load all data

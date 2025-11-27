@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
+const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -8,6 +8,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.SESSION_SECRET || 'your-secret-key';
 
 // Allowed origins
 const allowedOrigins = [
@@ -19,12 +20,8 @@ const allowedOrigins = [
 // Middleware
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-
         if (allowedOrigins.indexOf(origin) === -1) {
-            // For development, you might want to allow all, but let's be specific
-            // If specific origin fails, check if it matches the port
             if (process.env.NODE_ENV === 'development') {
                 return callback(null, true);
             }
@@ -38,24 +35,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session configuration
-const isProduction = process.env.NODE_ENV === 'production';
-
-app.set('trust proxy', 1); // Trust first proxy (required for Render/Heroku)
-
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: isProduction, // True in production (https), false in dev
-        httpOnly: true,
-        sameSite: isProduction ? 'none' : 'lax', // None for cross-site in prod
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-}));
-
-// Serve static files (uploaded images and assets)
+// Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/assets', express.static(path.join(__dirname, '../assets')));
 
@@ -108,13 +88,18 @@ const writeDatabase = (data) => {
     fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
 };
 
-// Authentication middleware
-const isAuthenticated = (req, res, next) => {
-    if (req.session.isAuthenticated) {
+// JWT Authentication Middleware
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+    if (!token) return res.status(401).json({ error: 'Unauthorized: No token provided' });
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Forbidden: Invalid token' });
+        req.user = user;
         next();
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
-    }
+    });
 };
 
 // ==================== AUTH ROUTES ====================
@@ -124,23 +109,22 @@ app.post('/api/auth/login', (req, res) => {
     const { username, password } = req.body;
 
     if (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD) {
-        req.session.isAuthenticated = true;
-        req.session.username = username;
-        res.json({ success: true, message: 'Login successful' });
+        // Create token
+        const token = jwt.sign({ username: username }, JWT_SECRET, { expiresIn: '24h' });
+        res.json({ success: true, message: 'Login successful', token: token });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
     }
 });
 
-// Logout
+// Logout (Client just deletes token, but we can have an endpoint for consistency)
 app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy();
     res.json({ success: true, message: 'Logout successful' });
 });
 
-// Check auth status
-app.get('/api/auth/status', (req, res) => {
-    res.json({ isAuthenticated: !!req.session.isAuthenticated });
+// Check auth status (Verify token)
+app.get('/api/auth/status', authenticateToken, (req, res) => {
+    res.json({ isAuthenticated: true, user: req.user });
 });
 
 // ==================== PUBLIC ROUTES ====================
@@ -188,7 +172,7 @@ app.get('/api/cv', (req, res) => {
 // ==================== PROTECTED ROUTES ====================
 
 // Create project
-app.post('/api/projects', isAuthenticated, upload.single('image'), (req, res) => {
+app.post('/api/projects', authenticateToken, upload.single('image'), (req, res) => {
     try {
         const db = readDatabase();
         const newProject = {
@@ -212,7 +196,7 @@ app.post('/api/projects', isAuthenticated, upload.single('image'), (req, res) =>
 });
 
 // Update project
-app.put('/api/projects/:id', isAuthenticated, upload.single('image'), (req, res) => {
+app.put('/api/projects/:id', authenticateToken, upload.single('image'), (req, res) => {
     try {
         const db = readDatabase();
         const projectIndex = db.projects.findIndex(p => p.id === req.params.id);
@@ -244,7 +228,7 @@ app.put('/api/projects/:id', isAuthenticated, upload.single('image'), (req, res)
 });
 
 // Delete project
-app.delete('/api/projects/:id', isAuthenticated, (req, res) => {
+app.delete('/api/projects/:id', authenticateToken, (req, res) => {
     try {
         const db = readDatabase();
         const projectIndex = db.projects.findIndex(p => p.id === req.params.id);
@@ -262,7 +246,7 @@ app.delete('/api/projects/:id', isAuthenticated, (req, res) => {
 });
 
 // Create experience
-app.post('/api/experience', isAuthenticated, (req, res) => {
+app.post('/api/experience', authenticateToken, (req, res) => {
     try {
         const db = readDatabase();
         const newExperience = {
@@ -285,7 +269,7 @@ app.post('/api/experience', isAuthenticated, (req, res) => {
 });
 
 // Update experience
-app.put('/api/experience/:id', isAuthenticated, (req, res) => {
+app.put('/api/experience/:id', authenticateToken, (req, res) => {
     try {
         const db = readDatabase();
         const expIndex = db.experience.findIndex(e => e.id === req.params.id);
@@ -312,7 +296,7 @@ app.put('/api/experience/:id', isAuthenticated, (req, res) => {
 });
 
 // Delete experience
-app.delete('/api/experience/:id', isAuthenticated, (req, res) => {
+app.delete('/api/experience/:id', authenticateToken, (req, res) => {
     try {
         const db = readDatabase();
         const expIndex = db.experience.findIndex(e => e.id === req.params.id);
@@ -330,7 +314,7 @@ app.delete('/api/experience/:id', isAuthenticated, (req, res) => {
 });
 
 // Update about section
-app.put('/api/about', isAuthenticated, upload.single('image'), (req, res) => {
+app.put('/api/about', authenticateToken, upload.single('image'), (req, res) => {
     try {
         const db = readDatabase();
 
@@ -351,7 +335,7 @@ app.put('/api/about', isAuthenticated, upload.single('image'), (req, res) => {
 });
 
 // Upload CV
-app.post('/api/cv', isAuthenticated, upload.single('cv'), (req, res) => {
+app.post('/api/cv', authenticateToken, upload.single('cv'), (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
