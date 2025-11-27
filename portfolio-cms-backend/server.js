@@ -247,7 +247,7 @@ app.delete('/api/projects/:id', authenticateToken, (req, res) => {
 });
 
 // Create experience
-app.post('/api/experience', authenticateToken, (req, res) => {
+app.post('/api/experience', authenticateToken, upload.none(), (req, res) => {
     try {
         const db = readDatabase();
         const newExperience = {
@@ -270,7 +270,7 @@ app.post('/api/experience', authenticateToken, (req, res) => {
 });
 
 // Update experience
-app.put('/api/experience/:id', authenticateToken, (req, res) => {
+app.put('/api/experience/:id', authenticateToken, upload.none(), (req, res) => {
     try {
         const db = readDatabase();
         const expIndex = db.experience.findIndex(e => e.id === req.params.id);
