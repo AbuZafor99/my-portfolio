@@ -3,7 +3,7 @@
 const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
 const API_BASE_URL = isLocal
     ? 'http://localhost:3000/api'
-    : 'https://your-backend-url-on-render.com/api'; // You will update this after deployment
+    : 'https://my-portfolio-gbxd.onrender.com/api';
 
 // API Client
 class PortfolioAPI {

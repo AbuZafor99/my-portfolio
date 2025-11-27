@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:3000/api';
+const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+const API_URL = isLocal
+    ? 'http://localhost:3000/api'
+    : 'https://my-portfolio-gbxd.onrender.com/api';
 
 // Check authentication on page load
 window.addEventListener('DOMContentLoaded', async () => {
