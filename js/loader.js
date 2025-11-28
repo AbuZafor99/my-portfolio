@@ -29,7 +29,7 @@ async function loadComponents() {
 
     // Load main script after content is ready
     const script = document.createElement('script');
-    script.src = 'js/script.js';
+    script.src = 'js/script.js?v=3';
     script.onload = () => {
         // Hide splash screen after a delay to show animation
         setTimeout(() => {
