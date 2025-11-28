@@ -7,52 +7,107 @@ const API_BASE_URL = isLocal
 
 // API Client
 class PortfolioAPI {
+    // Cache helpers
+    static getCached(key) {
+        try {
+            const data = localStorage.getItem(`portfolio_cache_${key}`);
+            return data ? JSON.parse(data) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    static setCache(key, data) {
+        try {
+            localStorage.setItem(`portfolio_cache_${key}`, JSON.stringify(data));
+        } catch (e) {
+            console.error('Cache save failed', e);
+        }
+    }
+
     // Fetch all projects
     static async getProjects() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/projects`);
-            if (!response.ok) throw new Error('Failed to fetch projects');
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-            return [];
-        }
+        const cached = this.getCached('projects');
+
+        // Fetch in background if cached exists
+        const fetchPromise = (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/projects`);
+                if (!response.ok) throw new Error('Failed to fetch projects');
+                const data = await response.json();
+                this.setCache('projects', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+                return [];
+            }
+        })();
+
+        if (cached) return cached;
+        return await fetchPromise;
     }
 
     // Fetch all experience
     static async getExperience() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/experience`);
-            if (!response.ok) throw new Error('Failed to fetch experience');
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching experience:', error);
-            return [];
-        }
+        const cached = this.getCached('experience');
+
+        const fetchPromise = (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/experience`);
+                if (!response.ok) throw new Error('Failed to fetch experience');
+                const data = await response.json();
+                this.setCache('experience', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching experience:', error);
+                return [];
+            }
+        })();
+
+        if (cached) return cached;
+        return await fetchPromise;
     }
 
     // Fetch about section
     static async getAbout() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/about`);
-            if (!response.ok) throw new Error('Failed to fetch about');
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching about:', error);
-            return null;
-        }
+        const cached = this.getCached('about');
+
+        const fetchPromise = (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/about`);
+                if (!response.ok) throw new Error('Failed to fetch about');
+                const data = await response.json();
+                this.setCache('about', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching about:', error);
+                return null;
+            }
+        })();
+
+        if (cached) return cached;
+        return await fetchPromise;
     }
 
     // Fetch CV info
     static async getCV() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/cv`);
-            if (!response.ok) throw new Error('Failed to fetch CV');
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching CV:', error);
-            return null;
-        }
+        const cached = this.getCached('cv');
+
+        const fetchPromise = (async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cv`);
+                if (!response.ok) throw new Error('Failed to fetch CV');
+                const data = await response.json();
+                this.setCache('cv', data);
+                return data;
+            } catch (error) {
+                console.error('Error fetching CV:', error);
+                return null;
+            }
+        })();
+
+        if (cached) return cached;
+        return await fetchPromise;
     }
 
     // Helper to get image URL
