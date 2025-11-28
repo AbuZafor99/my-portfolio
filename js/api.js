@@ -8,8 +8,20 @@ const API_BASE_URL = isLocal
 // API Client
 class PortfolioAPI {
     // Cache helpers
+    static get CACHE_VERSION() {
+        return 'v1.0'; // Increment this to force cache clear
+    }
+
     static getCached(key) {
         try {
+            const cachedVersion = localStorage.getItem('portfolio_cache_version');
+            if (cachedVersion !== this.CACHE_VERSION) {
+                // Clear old cache if version mismatch
+                this.clearCache();
+                localStorage.setItem('portfolio_cache_version', this.CACHE_VERSION);
+                return null;
+            }
+
             const data = localStorage.getItem(`portfolio_cache_${key}`);
             return data ? JSON.parse(data) : null;
         } catch (e) {
@@ -20,9 +32,18 @@ class PortfolioAPI {
     static setCache(key, data) {
         try {
             localStorage.setItem(`portfolio_cache_${key}`, JSON.stringify(data));
+            localStorage.setItem('portfolio_cache_version', this.CACHE_VERSION);
         } catch (e) {
             console.error('Cache save failed', e);
         }
+    }
+
+    static clearCache() {
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('portfolio_cache_')) {
+                localStorage.removeItem(key);
+            }
+        });
     }
 
     // Fetch all projects
