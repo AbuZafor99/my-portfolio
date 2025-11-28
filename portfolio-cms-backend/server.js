@@ -11,10 +11,13 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.SESSION_SECRET || 'your-secret-key';
 
 // Allowed origins
+// Allowed origins
 const allowedOrigins = [
     'http://127.0.0.1:5500',
     'http://localhost:5500',
-    process.env.FRONTEND_URL
+    'https://abuzafor.me',
+    'https://abuzafor99.github.io',
+    ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [])
 ].filter(Boolean);
 
 // Middleware
