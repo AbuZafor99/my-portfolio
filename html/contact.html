@@ -15,27 +15,3 @@
         </a>
     </div>
 </section>
-
-<script src="js/api.js"></script>
-<script>
-    // Load CV link dynamically
-    async function loadCVLink() {
-        const cvBtn = document.getElementById('cvDownloadBtn');
-
-        try {
-            const cv = await PortfolioAPI.getCV();
-            if (cv && cv.path) {
-                cvBtn.href = cv.path;
-            }
-        } catch (error) {
-            console.error('Failed to load CV link:', error);
-        }
-    }
-
-    // Load CV link when the page loads
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadCVLink);
-    } else {
-        loadCVLink();
-    }
-</script>
