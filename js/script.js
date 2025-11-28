@@ -272,4 +272,4 @@ loadProjects();
 loadExperience();
 loadAbout();
 loadCVLink();
-}
+
