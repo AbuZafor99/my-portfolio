@@ -4,69 +4,9 @@
     <ul class="project-list" id="projectList">
         <!-- Projects will be loaded dynamically -->
         <div class="loading-skeleton">
-            <p style="color: #8892b0; text-align: center;">Loading projects...</p>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
         </div>
     </ul>
 </section>
-
-<script src="js/api.js"></script>
-<script>
-// Load projects dynamically
-async function loadProjects() {
-    const projectList = document.getElementById('projectList');
-    
-    try {
-        const projects = await PortfolioAPI.getProjects();
-        
-        if (projects.length === 0) {
-            projectList.innerHTML = '<p style="color: #8892b0; text-align: center;">No projects available.</p>';
-            return;
-        }
-        
-        projectList.innerHTML = '';
-        
-        projects.forEach((project, index) => {
-            const li = document.createElement('li');
-            li.className = `project-item ${index % 2 === 0 ? 'slide-left' : 'slide-right'}`;
-            
-            const imageUrl = PortfolioAPI.getImageURL(project.image);
-            
-            li.innerHTML = `
-                <div class="project-content">
-                    <p class="project-overline">${project.overline}</p>
-                    <h3 class="project-title">${project.title}</h3>
-                    <div class="project-description">
-                        <p>${project.description}</p>
-                    </div>
-                    <ul class="project-tech-list">
-                        ${project.technologies.map(tech => `<li>${tech}</li>`).join('')}
-                    </ul>
-                    <div class="project-links">
-                        ${project.githubUrl && project.githubUrl !== '#' ? 
-                            `<a href="${project.githubUrl}" target="_blank"><i class="fab fa-github"></i></a>` : ''}
-                        ${project.liveUrl && project.liveUrl !== '#' ? 
-                            `<a href="${project.liveUrl}" target="_blank"><i class="fas fa-external-link-alt"></i></a>` : ''}
-                    </div>
-                </div>
-                <div class="project-image">
-                    <a href="${project.githubUrl || '#'}" target="_blank">
-                        <img src="${imageUrl}" alt="${project.title}" />
-                    </a>
-                </div>
-            `;
-            
-            projectList.appendChild(li);
-        });
-    } catch (error) {
-        console.error('Failed to load projects:', error);
-        projectList.innerHTML = '<p style="color: #f87171; text-align: center;">Failed to load projects. Please try again later.</p>';
-    }
-}
-
-// Load projects when the page loads
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadProjects);
-} else {
-    loadProjects();
-}
-</script>

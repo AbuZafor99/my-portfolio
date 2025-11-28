@@ -978,3 +978,50 @@ section {
     opacity: 1;
     transform: translate(0) scale(1);
 }
+/* Skeleton Loader */
+.skeleton {
+    background: #112240;
+    background: linear-gradient(
+        110deg,
+        #112240 8%,
+        #233554 18%,
+        #112240 33%
+    );
+    border-radius: 4px;
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position-x: -200%;
+    }
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-title {
+    height: 32px;
+    margin-bottom: 20px;
+    width: 40%;
+}
+
+.skeleton-card {
+    height: 400px;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+.skeleton-tab {
+    height: 42px;
+    width: 100%;
+    margin-bottom: 2px;
+}
